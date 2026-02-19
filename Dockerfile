@@ -3,11 +3,14 @@ FROM tomcat:10.1.8-jdk17
 # Remove default ROOT
 RUN rm -rf /usr/local/tomcat/webapps/ROOT
 
-# Copy ROOT.war
+# Copy WAR
 COPY ROOT.war /usr/local/tomcat/webapps/ROOT.war
 
-# Render provides PORT env variable, configure Tomcat to use it
+# Fix PORT binding for Render
 RUN sed -i 's/port="8080"/port="${PORT}"/' /usr/local/tomcat/conf/server.xml
+
+# CRITICAL FIX: bind to 0.0.0.0
+RUN sed -i 's/address="localhost"/address="0.0.0.0"/' /usr/local/tomcat/conf/server.xml || true
 
 EXPOSE 8080
 
